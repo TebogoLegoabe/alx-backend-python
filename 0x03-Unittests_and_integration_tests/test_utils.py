@@ -3,6 +3,7 @@
 Module for testing the utils module
 """
 import unittest
+from client import GithubOrgClient 
 from typing import Dict, Tuple, Union
 from unittest.mock import patch, Mock
 from parameterized import parameterized
@@ -59,6 +60,21 @@ class TestGetJson(unittest.TestCase):
             self.assertEqual(get_json(test_url), test_payload)
             req_get.assert_called_once_with(test_url)
 
+
+class TestGithubOrgClient(unittest.TestCase):
+    """Tests for the GithubOrgClient class."""
+
+    @parameterized.expand([
+        ("google",),
+        ("abc",),
+    ])
+    @patch('client.get_json', return_value={"mocked_key": "mocked_value"})
+    def test_org(self, org_name, mock_get_json):
+        """Test that GithubOrgClient.org returns the correct value."""
+        client = GithubOrgClient(org_name)
+        result = client.org()
+        mock_get_json.assert_called_once_with(f'https://api.github.com/orgs/{org_name}')
+        self.assertEqual(result, {"mocked_key": "mocked_value"})
 
 class TestMemoize(unittest.TestCase):
     """Tests the `memoize` function"""
